@@ -50,3 +50,48 @@ def representational_fairness(plan):
 
     result = dems - reps
     return result
+
+
+"""
+Compute the plan's Competitiveness.
+
+Competitiveness is defined here as the number of districts that 
+have a partisan index (democratic or republican) that falls within
+a desired range of .5 (by default).
+
+This calculator only operates on Plans.
+"""
+def competitiveness(plan, range=0.5):
+    """
+    Compute the competitiveness.
+
+    @param plan: A L{Plan} whose set of districts should be 
+        evaluated for competitiveness.
+    """
+    districts = plan.get_districts()
+    low = .5 - range 
+    high = .5 + range
+
+    fair = 0
+    for district in districts:
+        if district.district_id == 0:
+            continue
+
+        tmpdem = district.democratic
+        tmprep = district.republican
+
+        if tmpdem is None or tmprep is None:
+            continue
+
+        dem = float(tmpdem)
+        rep = float(tmprep)
+
+        if dem == 0.0 and rep == 0.0:
+            continue
+
+        pidx = dem / (dem + rep)
+        if pidx > low and pidx < high:
+            fair += 1
+
+    return fair
+
